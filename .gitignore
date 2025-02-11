@@ -1,0 +1,14 @@
+out
+node_modules
+client/server
+.vscode-test
+test.c
+test*.c
+test*.h
+.DS_Store
+*.vsix
+coverage
+*.heapsnapshot
+vscode-profile-*.*
+tsconfig.tsbuildinfo
+isolate*.log

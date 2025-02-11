@@ -1,0 +1,19 @@
+{
+    "files.exclude": {        
+        "node_modules": true,
+        "out": true
+    },
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "[antlr]": {
+        "editor.formatOnSave": false
+    },
+    "[lpc]": {
+        "editor.formatOnSave": false
+    },    
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "cSpell.words": [
+        "efun",
+        "sefun"
+    ],    
+}
