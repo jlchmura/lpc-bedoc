@@ -7,20 +7,24 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b && node ./build.js",
     "start": "npm run build && npx bedoc -p ./dist/index.js -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
-  },  
+  },
   "exports": {
     ".": "./dist/index.js"
   },
   "bedoc": {
-    "actions": ["dist/index.js"],
-    "input": ["../lpc-test2/**/*.c"],
+    "actions": [
+      "dist/index.js"
+    ],
+    "input": [
+      "../lpc-test2/**/*.c"
+    ],
     "output": "docs"
   },
   "author": "jlchmura",
   "license": "MIT",
   "dependencies": {
-    "@gesslar/bedoc": "^1.5.1",    
-    "@lpc-lang/core": "file:../lpc-language-server/lib"
+    "@gesslar/bedoc": "^1.5.1",
+    "@lpc-lang/core": "^1.1.2-5.2"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
