@@ -3,7 +3,7 @@ const esbuild = require("esbuild");
 // ACTION
 esbuild.build({
     entryPoints: ['src/index.ts'],  
-    bundle: true, 
+    bundle: false, 
     banner: { js: "// Copyright 2025 John L Chmura\n" },
     outfile: 'dist/index.js',
     target: ["es2020"],
@@ -13,5 +13,5 @@ esbuild.build({
     mainFields: ['module','main'], 
     logLevel: 'warning',
     treeShaking: true,
-    minify: true
+    minify: false
 })

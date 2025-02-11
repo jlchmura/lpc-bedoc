@@ -12,3 +12,4 @@ coverage
 vscode-profile-*.*
 tsconfig.tsbuildinfo
 isolate*.log
+dist

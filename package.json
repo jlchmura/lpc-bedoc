@@ -8,6 +8,14 @@
     "build": "tsc -b && node ./build.js",
     "start": "npm run build && node --enable-source-maps ./dist/index.js"
   },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "bedoc": {
+    "modules": [
+      "index.js"
+    ]
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {
