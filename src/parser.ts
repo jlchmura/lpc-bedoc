@@ -26,7 +26,7 @@ export class Parser {
             rootNames: parsedConfig?.fileNames || [],
             options: compilerOptions        
         };        
-        this.program = lpc.createProgram(this.createProgramOptions);
+        this.program = lpc.createProgram(this.createProgramOptions);                
     }
 
     public parse(fileName: string): lpc.SourceFile | undefined {        

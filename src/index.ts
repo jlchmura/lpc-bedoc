@@ -1,4 +1,5 @@
-import ActionManager, { ActionDefinition } from "@gesslar/bedoc/dist/types/core/ActionManager";
+import { ActionDefinition } from "@gesslar/bedoc/dist/types/core/ActionManager";
+import ParseManager from "@gesslar/bedoc/dist/types/core/action/ParseManager";
 import Logger from "@gesslar/bedoc/dist/types/core/Logger";
 import { Parser } from "./parser";
 import * as lpc from "@lpc-lang/core";
@@ -35,10 +36,21 @@ export const actions: ActionDefinition[] = [
 
         run: runLpcParser as any,
         setup: setupLpcParser as any
+    }, 
+    {
+        meta: {
+            action: "print",
+            format: "markdown"
+        },
+        run: mockPrinter as any
     }
 ];
 
-function setupLpcParser(params: { parent: ActionManager; log: Logger }): void {        
+async function mockPrinter(params: { fileName: string; content: string }): Promise<any> {
+    return { status: "success", content: "" };
+}
+
+function setupLpcParser(params: { parent: ParseManager; log: Logger }): void {        
     logger = params.log;    
 }
 
@@ -46,6 +58,8 @@ async function runLpcParser(params: { fileName: string; content: string }): Prom
     if (!parser) {
         parser = new Parser(params.fileName);
         logger?.info("Parser initialized");
+
+        
     }
 
     const sourceFile = parser.parse(params.fileName);  
@@ -58,7 +72,7 @@ async function runLpcParser(params: { fileName: string; content: string }): Prom
 
     const result: Signature[] = [];
     const funcs = sourceFile.statements.filter(s => s.kind === lpc.SyntaxKind.FunctionDeclaration) as lpc.FunctionDeclaration[];
-    funcs.forEach(f => {
+    funcs.forEach(f => {        
         const sig: Signature = {
             name: f.name?.text || "",
             modifiers: f.modifiers?.map(m => m.getText()) || [],
@@ -78,3 +92,71 @@ async function runLpcParser(params: { fileName: string; content: string }): Prom
         result
     }
 }
+
+export const contracts = [
+  `
+---
+provides:
+  root:
+    dataType: object
+    contains:
+      functions:
+        dataType: object[]
+        contains:
+          name:
+            dataType: string
+          description:
+            dataType: string[]
+          param:
+            dataType: object[]
+            contains:
+              type:
+                dataType: string
+              name:
+                dataType: string
+              content:
+                dataType: string[]
+          return:
+            dataType: object
+            contains:
+              type:
+                dataType: string
+              content:
+                dataType: string[]
+          example:
+            dataType: string[]
+`,
+  // Make the printer contract the same as the parser contract.
+  `
+---
+provides:
+  root:
+    dataType: object
+    contains:
+      functions:
+        dataType: object[]
+        contains:
+          name:
+            dataType: string
+          description:
+            dataType: string[]
+          param:
+            dataType: object[]
+            contains:
+              type:
+                dataType: string
+              name:
+                dataType: string
+              content:
+                dataType: string[]
+          return:
+            dataType: object
+            contains:
+              type:
+                dataType: string
+              content:
+                dataType: string[]
+          example:
+            dataType: string[]
+`,
+]
