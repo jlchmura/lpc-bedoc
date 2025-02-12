@@ -32,6 +32,12 @@ interface ErrorResult {
 
 type Result = SuccessResult | ErrorResult;
 
+interface Param {
+    type: string,
+    name: string,
+    content: string[]
+}
+
 export const actions: ActionDefinition[] = [
     {
         meta: {
@@ -75,7 +81,10 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
     }
 
     const result: Signature[] = [];
+
+    // find all functions in the source file
     const funcs = sourceFile.statements.filter(s => s.kind === lpc.SyntaxKind.FunctionDeclaration) as lpc.FunctionDeclaration[];
+
     funcs.forEach(f => {        
         const sig: Signature = {
             name: f.name?.text || "",
@@ -84,7 +93,8 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
             type: f.type?.getText(sourceFile) || "",            
             access: ""
         };
-        
+                
+        const params = new Map<string, Param>();
         const tags: any = {
             description: [],
             param: []
@@ -92,18 +102,17 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
         lpc.getJSDocCommentsAndTags(f)?.forEach(jsDoc => {
             if (lpc.isJSDoc(jsDoc)) {
                 tags.description = [jsDoc.comment];
+
                 jsDoc.tags?.forEach(tag => { 
-                    switch (tag.kind) {
-                        // case lpc.SyntaxKind.JSDoc:                    
-                        //     tags.description = [(tag as lpc.JSDoc).comment];
-                        //     break;
+                    switch (tag.kind) {                        
                         case lpc.SyntaxKind.JSDocParameterTag:
                             const p = tag as lpc.JSDocParameterTag;
-                            tags.param.push({
+                            const pName = p.name.getText(sourceFile);
+                            params.set(pName, {
                                 type: p.typeExpression?.getText(sourceFile) || "",
-                                name: p.name.getText(sourceFile),
-                                content: [p.comment]
-                            });
+                                name: pName,
+                                content: typeof p.comment === "string" ? [p.comment] : []
+                            });                            
                         case lpc.SyntaxKind.JSDocReturnTag:
                             const r = tag as lpc.JSDocReturnTag;
                             tags["return"] = {
@@ -115,6 +124,23 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                 });
             }            
         });
+
+        tags.return = tags["return"] || { type: "", content: [] };
+
+        // fill in any missing parameters using the params from
+        // the function signature
+        f.parameters?.forEach(p => {
+            const pName = p.name.getText(sourceFile);
+            if (!params.has(pName)) {
+                params.set(pName, {
+                    type: p.type?.getText(sourceFile) || "",
+                    name: pName,
+                    content: []
+                });
+            }
+        });
+
+        tags.param = Array.from(params.values());
         
         result.push({
             ...tags,
