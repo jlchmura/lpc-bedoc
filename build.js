@@ -5,7 +5,7 @@ esbuild.build({
     entryPoints: ['src/index.ts'],  
     bundle: true, 
     banner: { js: "// Copyright 2025 John L Chmura\n" },
-    outfile: 'dist/index.js',
+    outfile: 'index.js',
     target: ["es2020"],
     platform: 'node',
     format: 'cjs',

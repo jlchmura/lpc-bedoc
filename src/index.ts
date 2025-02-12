@@ -13,7 +13,12 @@ interface Signature {
     type?: string,
     modifiers?: string[],
     parameters?: string[],
-    [tag: string]: any
+    
+}
+
+interface FunctionResult {
+    [tag: string]: any;
+    signture: Signature;
 }
 
 interface SuccessResult {
@@ -54,19 +59,17 @@ function setupLpcParser(params: { parent: ParseManager; log: Logger }): void {
     logger = params.log;    
 }
 
-async function runLpcParser(params: { fileName: string; content: string }): Promise<Result> {
+async function runLpcParser(params: { moduleName: string; moduleContent: string }): Promise<Result> {
     if (!parser) {
-        parser = new Parser(params.fileName);
+        parser = new Parser(params.moduleName);
         logger?.info("Parser initialized");
-
-        
     }
 
-    const sourceFile = parser.parse(params.fileName);  
+    const sourceFile = parser.parse(params.moduleName, params.moduleContent);  
     if (!sourceFile) {
         return { 
             status: "error",
-            error: new Error(`Failed to parse ${params.fileName}`)
+            error: new Error(`Failed to parse ${params.moduleName}`)
         }
     }
 
@@ -75,26 +78,29 @@ async function runLpcParser(params: { fileName: string; content: string }): Prom
     funcs.forEach(f => {        
         const sig: Signature = {
             name: f.name?.text || "",
-            modifiers: f.modifiers?.map(m => m.getText()) || [],
-            parameters: f.parameters?.map(p => p.getText()) || [],
-            type: f.type?.getText() || "",
+            modifiers: f.modifiers?.map(m => m.getText(sourceFile)) || [],
+            parameters: f.parameters?.map(p => p.getText(sourceFile)) || [],
+            type: f.type?.getText(sourceFile) || "",
         };
         
+        const tags: any = {};
         lpc.getJSDocTags(f)?.forEach(tag => {            
-            sig[tag.tagName.text] = tag.comment || "";
+            tags[tag.tagName.text] = tag.comment || "";
         });
 
-        result.push(sig);
+        result.push({
+            ...tags,
+            signture: sig
+        } satisfies FunctionResult);
     });
 
     return { 
         status: "success",
         result
-    }
+    } as any;
 }
 
-export const contracts = [
-  `
+const contract =   `
 ---
 provides:
   root:
@@ -125,38 +131,6 @@ provides:
                 dataType: string[]
           example:
             dataType: string[]
-`,
-  // Make the printer contract the same as the parser contract.
-  `
----
-provides:
-  root:
-    dataType: object
-    contains:
-      functions:
-        dataType: object[]
-        contains:
-          name:
-            dataType: string
-          description:
-            dataType: string[]
-          param:
-            dataType: object[]
-            contains:
-              type:
-                dataType: string
-              name:
-                dataType: string
-              content:
-                dataType: string[]
-          return:
-            dataType: object
-            contains:
-              type:
-                dataType: string
-              content:
-                dataType: string[]
-          example:
-            dataType: string[]
-`,
-]
+`;
+
+export const contracts = [contract,contract];

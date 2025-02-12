@@ -13,3 +13,5 @@ vscode-profile-*.*
 tsconfig.tsbuildinfo
 isolate*.log
 dist
+index.js
+index.js.map

@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import * as path from "path";
 import * as lpc from "@lpc-lang/core";
 import { findArgument } from "./utils";
@@ -12,7 +13,7 @@ export class Parser {
      * and all ancestor folders will be searched for the config file.
      */
     constructor(configSearchPath: string) {        
-        const configPath = lpc.findConfigFile(configSearchPath, lpc.sys.fileExists, "lpc-config.json");
+        const configPath = lpc.findConfigFile(path.resolve(configSearchPath), fs.existsSync, "lpc-config.json");
         const projectFolder = configPath && path.dirname(configPath);
         const configFile = configPath ? lpc.parseJsonText(configPath, lpc.sys.readFile(configPath)!) : undefined;
         const parsedConfig = configFile && lpc.parseLpcSourceFileConfigFileContent(configFile, lpc.sys, projectFolder!, undefined, configPath);
@@ -29,14 +30,27 @@ export class Parser {
         this.program = lpc.createProgram(this.createProgramOptions);                
     }
 
-    public parse(fileName: string): lpc.SourceFile | undefined {        
-        if (this.createProgramOptions.rootNames?.length) {
-            return this.program.getSourceFile(fileName);
-        } 
+    public parse(fileName: string, text: string): lpc.SourceFile | undefined {        
+        let sourceFile = this.program?.getSourceFile(fileName);
+
+        if (!sourceFile && fs.existsSync(fileName)) { 
+            const inferredProgram = lpc.createProgram(
+                {...this.createProgramOptions, rootNames: [fileName]}
+            );
+            sourceFile = inferredProgram.getSourceFile(fileName);        
+        }
+
+        if (!sourceFile) {
+            const fileHandler = lpc.createLpcFileHandler({
+                fileExists: fs.existsSync,
+                readFile: lpc.sys.readFile,
+                getCompilerOptions: () => this.createProgramOptions.options,
+                getIncludeDirs: () => [],
+                getCurrentDirectory: () => process.cwd(),
+            });
+            sourceFile = lpc.LpcParser.parseSourceFile(fileName, text, [], new Map(), fileHandler, lpc.ScriptTarget.LPC, undefined);
+        }
         
-        const inferredProgram = lpc.createProgram(
-            {...this.createProgramOptions, rootNames: [fileName]}
-        )
-        return inferredProgram.getSourceFile(fileName);        
+        return sourceFile;
     }
 }

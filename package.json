@@ -6,15 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b && node ./build.js",
-    "start": "npm run build && npx bedoc -p ./dist/index.js -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
+    "start": "npm run build && npx bedoc -p ./index.js -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./index.js"
   },
   "bedoc": {
     "actions": [
-      "dist/index.js"
+      "./index.js"      
     ],
+    "printer": "./index.js",
+    "parser": "./index.js",
     "input": [
       "../lpc-test2/**/*.c"
     ],
