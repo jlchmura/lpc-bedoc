@@ -25,8 +25,9 @@ export class Parser {
         this.createProgramOptions = {
             host: compilerHost,
             rootNames: parsedConfig?.fileNames || [],
-            options: compilerOptions        
+            options: compilerOptions,        
         };        
+
         this.program = lpc.createProgram(this.createProgramOptions);                
     }
 
@@ -48,7 +49,9 @@ export class Parser {
                 getIncludeDirs: () => [],
                 getCurrentDirectory: () => process.cwd(),
             });
-            sourceFile = lpc.LpcParser.parseSourceFile(fileName, text, [], new Map(), fileHandler, lpc.ScriptTarget.LPC, undefined);
+            sourceFile = lpc.LpcParser.parseSourceFile(fileName, text, [], new Map(), fileHandler, lpc.ScriptTarget.LPC, undefined, true);
+        } else {
+            lpc.LpcParser.fixupParentReferences(sourceFile);
         }
         
         return sourceFile;

@@ -59,17 +59,18 @@ function setupLpcParser(params: { parent: ParseManager; log: Logger }): void {
     logger = params.log;    
 }
 
-async function runLpcParser(params: { moduleName: string; moduleContent: string }): Promise<Result> {
+async function runLpcParser(params: { file: any; moduleContent: string }): Promise<Result> {
+    const fileName = params.file.path;
     if (!parser) {
-        parser = new Parser(params.moduleName);
+        parser = new Parser(fileName);
         logger?.info("Parser initialized");
     }
 
-    const sourceFile = parser.parse(params.moduleName, params.moduleContent);  
+    const sourceFile = parser.parse(fileName, params.moduleContent);  
     if (!sourceFile) {
         return { 
             status: "error",
-            error: new Error(`Failed to parse ${params.moduleName}`)
+            error: new Error(`Failed to parse ${fileName}`)
         }
     }
 
@@ -84,11 +85,37 @@ async function runLpcParser(params: { moduleName: string; moduleContent: string 
             access: ""
         };
         
-        const tags: any = {};
-        lpc.getJSDocTags(f)?.forEach(tag => {            
-            tags[tag.tagName.text] = tag.comment || "";
+        const tags: any = {
+            description: [],
+            param: []
+        };        
+        lpc.getJSDocCommentsAndTags(f)?.forEach(jsDoc => {
+            if (lpc.isJSDoc(jsDoc)) {
+                tags.description = [jsDoc.comment];
+                jsDoc.tags?.forEach(tag => { 
+                    switch (tag.kind) {
+                        // case lpc.SyntaxKind.JSDoc:                    
+                        //     tags.description = [(tag as lpc.JSDoc).comment];
+                        //     break;
+                        case lpc.SyntaxKind.JSDocParameterTag:
+                            const p = tag as lpc.JSDocParameterTag;
+                            tags.param.push({
+                                type: p.typeExpression?.getText(sourceFile) || "",
+                                name: p.name.getText(sourceFile),
+                                content: [p.comment]
+                            });
+                        case lpc.SyntaxKind.JSDocReturnTag:
+                            const r = tag as lpc.JSDocReturnTag;
+                            tags["return"] = {
+                                type: r.typeExpression?.getText(sourceFile) || "",
+                                content: [r.comment]
+                            };
+                            break;            
+                    }
+                });
+            }            
         });
-
+        
         result.push({
             ...tags,
             signature: sig
