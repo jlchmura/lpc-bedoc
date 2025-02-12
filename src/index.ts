@@ -18,7 +18,7 @@ interface Signature {
 
 interface FunctionResult {
     [tag: string]: any;
-    signture: Signature;
+    signature: Signature;
 }
 
 interface SuccessResult {
@@ -80,7 +80,8 @@ async function runLpcParser(params: { moduleName: string; moduleContent: string 
             name: f.name?.text || "",
             modifiers: f.modifiers?.map(m => m.getText(sourceFile)) || [],
             parameters: f.parameters?.map(p => p.getText(sourceFile)) || [],
-            type: f.type?.getText(sourceFile) || "",
+            type: f.type?.getText(sourceFile) || "",            
+            access: ""
         };
         
         const tags: any = {};
@@ -90,7 +91,7 @@ async function runLpcParser(params: { moduleName: string; moduleContent: string 
 
         result.push({
             ...tags,
-            signture: sig
+            signature: sig
         } satisfies FunctionResult);
     });
 
