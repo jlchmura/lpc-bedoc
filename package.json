@@ -9,17 +9,17 @@
     "start": "npm run build && npx bedoc -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
   },
   "exports": {
-    ".": "./index.js"
+    ".": "./dist/index.js"
   },  
   "modules": [
-    "./index.js"
+    "./dist/index.js"
   ],
   "bedoc": {
     "actions": [
-      "./index.js"
+      "./dist/index.js"
     ],
-    "printer": "./index.js",
-    "parser": "./index.js",
+    "printer": "./dist/index.js",
+    "parser": "./dist/index.js",
     "input": [
       "../lpc-test2/**/*.c"
     ],

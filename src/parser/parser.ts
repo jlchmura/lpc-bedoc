@@ -32,7 +32,7 @@ export class Parser {
             fileExists: fs.existsSync,
             readFile: lpc.sys.readFile,
             getCompilerOptions: () => this.createProgramOptions.options,
-            getIncludeDirs: () => [],
+            getIncludeDirs: () => emptyArray,
             getCurrentDirectory: () => process.cwd(),
         });
 
@@ -40,7 +40,7 @@ export class Parser {
         const compilerHost = lpc.createCompilerHost(compilerOptions);            
         this.createProgramOptions = {
             host: compilerHost,
-            rootNames: parsedConfig?.fileNames || [],
+            rootNames: parsedConfig?.fileNames || emptyArray,
             options: compilerOptions,                                
         };        
 
@@ -52,9 +52,9 @@ export class Parser {
     public getSourceFile(fileName: string, text: string): lpc.SourceFile | undefined {        
         // check if the file is already in the program (program may not exist)
         let sourceFile = this.program?.getSourceFile(fileName);
-
-        // as a fallback, parse the file as a standalone file using default options
+        
         if (!sourceFile) {            
+            // as a fallback, parse the file as a standalone file using default options
             sourceFile = lpc.LpcParser.parseSourceFile(fileName, text, emptyArray, emptyMap, this.fileHandler, lpc.ScriptTarget.LPC, undefined, /** set parent nodes */ true);
         } else {
             // if the file came from a program, we'll need to set the parent for each AST node
