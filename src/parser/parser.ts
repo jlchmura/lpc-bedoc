@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as lpc from "@lpc-lang/core";
-import { findArgument } from "./utils";
 
 export class Parser {
     private createProgramOptions: lpc.CreateProgramOptions;
