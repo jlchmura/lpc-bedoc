@@ -38,7 +38,7 @@ interface Param {
     content: string[]
 }
 
-export const printerAction: ActionDefinition = {
+export const action: ActionDefinition = {
     meta: {
         action: "parse",
         language: "lpc"
@@ -47,10 +47,6 @@ export const printerAction: ActionDefinition = {
     run: runLpcParser as any,
     setup: setupLpcParser as any
 };
-
-async function mockPrinter(params: { fileName: string; content: string }): Promise<any> {
-    return { status: "success", content: "" };
-}
 
 function setupLpcParser(params: { parent: ParseManager; log: Logger }): void {        
     logger = params.log;    

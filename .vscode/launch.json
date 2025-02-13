@@ -20,6 +20,7 @@
                 "--parser",
                 "index.js",
                 "--printer",
+                // "index.js"
                 "../bedoc/examples/node_modules_test/bedoc-markdown-printer/bedoc-markdown-printer.js",
             ],
             "preLaunchTask": "npm: build",

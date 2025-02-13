@@ -1,19 +1,10 @@
-import { printerAction } from "./parser";
+import * as lpc from "./parser";
+import * as markdown from "./printer/markdown";
 
 export const actions = [
-    printerAction,
-    {
-        meta: {
-            action: "print",
-            format: "markdown"
-        },
-        run: mockPrinter as any
-    }
+    lpc.action,
+    markdown.action,    
 ]
-
-async function mockPrinter(params: { fileName: string; content: string }): Promise<any> {
-    return { status: "success", content: "" };
-}
 
 const contract = `
 ---
