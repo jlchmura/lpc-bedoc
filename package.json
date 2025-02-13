@@ -6,11 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b && node ./build.js",
-    "start": "npm run build && npx bedoc -p ./index.js -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
+    "start": "npm run build && npx bedoc -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
   },
   "exports": {
     ".": "./index.js"
-  },
+  },  
   "bedoc": {
     "actions": [
       "./index.js"
@@ -25,7 +25,7 @@
   "author": "jlchmura",
   "license": "MIT",
   "dependencies": {
-    "@gesslar/bedoc": "^1.5.2",
+    "@gesslar/bedoc": "^1.6.0",
     "@lpc-lang/core": "^1.1.2-5.2"
   },
   "devDependencies": {
