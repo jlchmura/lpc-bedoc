@@ -11,6 +11,9 @@
   "exports": {
     ".": "./index.js"
   },  
+  "modules": [
+    "./index.js"
+  ],
   "bedoc": {
     "actions": [
       "./index.js"

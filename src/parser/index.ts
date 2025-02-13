@@ -23,7 +23,7 @@ interface FunctionResult {
 
 interface SuccessResult {
     status: "success",
-    result: Signature[]
+    result: FunctionResult[]
 }
 interface ErrorResult {
     status: "error",
@@ -59,7 +59,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
         logger?.info("Parser initialized");
     }
 
-    const sourceFile = parser.parse(fileName, params.moduleContent);  
+    const sourceFile = parser.getSourceFile(fileName, params.moduleContent);      
     if (!sourceFile) {
         return { 
             status: "error",
@@ -72,20 +72,32 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
     // find all functions in the source file
     const funcs = sourceFile.statements.filter(s => s.kind === lpc.SyntaxKind.FunctionDeclaration) as lpc.FunctionDeclaration[];
 
-    funcs.forEach(f => {        
+    funcs.forEach(f => {                    
         const sig: Signature = {
             name: f.name?.text || "",
-            modifiers: f.modifiers?.map(m => m.getText(sourceFile)) || [],
+            modifiers: f.modifiers?.filter(m => !isAccessModifier(m)).map(m => m.getText(sourceFile)) || [],
             parameters: f.parameters?.map(p => p.getText(sourceFile)) || [],
             type: f.type?.getText(sourceFile) || "",            
             access: ""
         };
-                
+        
+        // figure out access modifier
+        const modifierFlags = lpc.getCombinedModifierFlags(f);
+        if (modifierFlags & lpc.ModifierFlags.Public) {
+            sig.access = "public";
+        } else if (modifierFlags & lpc.ModifierFlags.Protected) {
+            sig.access = "protected";
+        } else if (modifierFlags & lpc.ModifierFlags.Private) {
+            sig.access = "private";
+        }
+        
         const params = new Map<string, Param>();
         const tags: any = {
             description: [],
             param: []
         };        
+
+        // parse jsdoc comment and tags
         lpc.getJSDocCommentsAndTags(f)?.forEach(jsDoc => {
             if (lpc.isJSDoc(jsDoc)) {
                 tags.description = [jsDoc.comment];
@@ -112,6 +124,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
             }            
         });
 
+        // markdown printer can't hundle undefined return, so fill it in if there isn't one
         tags.return = tags["return"] || { type: "", content: [] };
 
         // fill in any missing parameters using the params from
@@ -132,7 +145,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
         result.push({
             ...tags,
             signature: sig
-        } satisfies FunctionResult);
+        });
     });
 
     return { 
@@ -141,3 +154,13 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
     } as any;
 }
 
+function isAccessModifier(modifier: lpc.Modifier) {
+    switch (modifier.kind) {
+        case lpc.SyntaxKind.PublicKeyword:
+        case lpc.SyntaxKind.ProtectedKeyword:
+        case lpc.SyntaxKind.PrivateKeyword:
+            return true;
+    }
+
+    return false;
+}
