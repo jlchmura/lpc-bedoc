@@ -10,20 +10,10 @@
   },
   "exports": {
     ".": "./dist/index.js"
-  },  
-  "modules": [
-    "./dist/index.js"
-  ],
+  },   
   "bedoc": {
-    "actions": [
-      "./dist/index.js"
-    ],
     "printer": "./dist/index.js",
-    "parser": "./dist/index.js",
-    "input": [
-      "../lpc-test2/**/*.c"
-    ],
-    "output": "docs"
+    "parser": "./dist/index.js"    
   },
   "author": "jlchmura",
   "license": "MIT",
