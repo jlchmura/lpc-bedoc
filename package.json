@@ -16,10 +16,11 @@
     ".": "./dist/index.js"
   },
   "bedoc": {
+    "modules": ["./dist/index.js"],
     "printer": "./dist/index.js",
     "parser": "./dist/index.js",
     "input": ["../lpc-test2/**/*.c"],
-    "output": "docs"    
+    "output": "docs"   
   },
   "author": "jlchmura",
   "license": "MIT",
