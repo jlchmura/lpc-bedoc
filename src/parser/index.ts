@@ -3,23 +3,10 @@ import ParseManager from "@gesslar/bedoc/dist/types/core/action/ParseManager";
 import Logger from "@gesslar/bedoc/dist/types/core/Logger";
 import { Parser } from "./parser";
 import * as lpc from "@lpc-lang/core";
+import { FunctionResult, Param, Signature } from "../types";
 
 let logger: Logger | undefined;
 let parser: Parser | undefined;
-
-interface Signature {
-    name: string,
-    access?: string,
-    type?: string,
-    modifiers?: string[],
-    parameters?: string[],
-    
-}
-
-interface FunctionResult {
-    [tag: string]: any;
-    signature: Signature;
-}
 
 interface SuccessResult {
     status: "success",
@@ -32,11 +19,6 @@ interface ErrorResult {
 
 type Result = SuccessResult | ErrorResult;
 
-interface Param {
-    type: string,
-    name: string,
-    content: string[]
-}
 
 export const action: ActionDefinition = {
     meta: {
@@ -67,7 +49,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
         }
     }
 
-    const result: Signature[] = [];
+    const result: FunctionResult[] = [];
 
     // find all functions in the source file
     const funcs = sourceFile.statements.filter(s => s.kind === lpc.SyntaxKind.FunctionDeclaration) as lpc.FunctionDeclaration[];
@@ -92,7 +74,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
         }
         
         const params = new Map<string, Param>();
-        const tags: any = {
+        const tags: Partial<FunctionResult> = {
             description: [],
             param: []
         };        
@@ -100,7 +82,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
         // parse jsdoc comment and tags
         lpc.getJSDocCommentsAndTags(f)?.forEach(jsDoc => {
             if (lpc.isJSDoc(jsDoc)) {
-                tags.description = [jsDoc.comment];
+                tags.description = [jsDoc.comment as string];
 
                 jsDoc.tags?.forEach(tag => { 
                     switch (tag.kind) {                        
@@ -116,7 +98,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                             const r = tag as lpc.JSDocReturnTag;
                             tags["return"] = {
                                 type: r.typeExpression?.getText(sourceFile) || "",
-                                content: [r.comment]
+                                content: [r.comment as string]
                             };
                             break;            
                     }
@@ -141,11 +123,9 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
         });
 
         tags.param = Array.from(params.values());
-        
-        result.push({
-            ...tags,
-            signature: sig
-        });
+        tags.signature = sig;
+
+        result.push(tags as FunctionResult);
     });
 
     return { 
