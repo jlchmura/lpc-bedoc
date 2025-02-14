@@ -17,9 +17,8 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
     writer.writeHeader(1, fileName);
 
     // write toc
-    params.moduleContent.forEach(f => {
-        writer.write(`- [${f.signature.name}](#${headerToAnchor(f.signature.name)})\n`);
-    });
+    const toc = params.moduleContent.map(f => `[${f.signature.name}](#${headerToAnchor(f.signature.name)})`);
+    writer.writeListItems(toc);
     writer.writeNewLine();
 
     params.moduleContent.forEach(f => {
@@ -164,6 +163,12 @@ class MarkdownWriter {
 
     public writeLink(text: string, url: string) {
         this.write(`[${text}](${url})`);
+    }
+
+    public writeListItems(items: string[]) {    
+        items.forEach(i => {
+            this.write(`- ${i}\n`);
+        });
     }
 }
 
