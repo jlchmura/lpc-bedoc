@@ -89,11 +89,19 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                         case lpc.SyntaxKind.JSDocParameterTag:
                             const p = tag as lpc.JSDocParameterTag;
                             const pName = p.name.getText(sourceFile);
-                            params.set(pName, {
+                            const parsedParam: Param = {
                                 type: p.typeExpression?.getText(sourceFile) || "",
                                 name: pName,
                                 content: typeof p.comment === "string" ? [p.comment] : []
-                            });                            
+                            };
+
+                            if (!parsedParam.type) {
+                                // try to get type from signature param
+                                const sigParam = f.parameters?.find(p => p.name.getText(sourceFile) === pName);
+                                parsedParam.type = sigParam?.type?.getText(sourceFile) || "";                                
+                            }
+
+                            params.set(pName, parsedParam);                            
                         case lpc.SyntaxKind.JSDocReturnTag:
                             const r = tag as lpc.JSDocReturnTag;
                             tags["return"] = {
