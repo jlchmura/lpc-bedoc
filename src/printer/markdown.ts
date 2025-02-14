@@ -52,7 +52,7 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
             writer.writeTableHeader(["Type", "Name", "Description"]);
 
             f.param.forEach(p => {
-                writer.writeTableRow([p.type, p.name, stripNewLines(p.content.join(" "))]);
+                writer.writeTableRow([`\`${p.type}\``, p.name, stripNewLines(p.content.join(" "))]);
             });
             writer.writeNewLine();
         }
@@ -164,7 +164,7 @@ class MarkdownWriter {
     public writeTableRow(cells: string[]) {
         this.write("|");
         cells.forEach(c => {
-            this.write(` ${c} |`);
+            this.write(` ${escapePipes(c)} |`);
         });
         this.writeNewLine();
     }
@@ -184,4 +184,9 @@ const stripNewLines = (s: string) => s.replace(/\n/g, " ");
 
 function headerToAnchor(header: string) {
     return header.toLowerCase().replace(/[^a-z0-9_]/g, "-");
+}
+
+function escapePipes(s: string) {
+    if (!s || s.length === 0) return s;
+    return s.replace(/\|/g, "\\|");
 }
