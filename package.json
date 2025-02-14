@@ -1,6 +1,6 @@
 {
   "name": "@lpc-lang/bedoc",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "BeDoc parser for LPC",
   "repository": {
     "type": "git",
