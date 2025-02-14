@@ -13,15 +13,23 @@ export const action: ActionDefinition = {
 async function run(params: { file: any, moduleContent: FunctionResult[] }): Promise<any> {
     const fileName = params.file.module;
     const writer = new MarkdownWriter("\n", 80);
+    const functions = params.moduleContent;
     
+    if (!functions || !functions.length) {
+        return {
+            status: "error",
+            message: "No functions found"
+        }
+    }
+
     writer.writeHeader(1, fileName);
 
     // write toc
-    const toc = params.moduleContent.map(f => `[${f.signature.name}](#${headerToAnchor(f.signature.name)})`);
+    const toc = functions.map(f => `[${f.signature.name}](#${headerToAnchor(f.signature.name)})`);
     writer.writeListItems(toc);
     writer.writeNewLine();
 
-    params.moduleContent.forEach(f => {
+    functions.forEach(f => {
         writer.writeHeader(2, f.signature.name);        
 
         // signature
@@ -35,7 +43,7 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
         writer.writeNewLine();
 
         // description
-        writer.writeText(f.description.map(d=>d.trim()).join(" ").replace(/\n/g, " "));
+        writer.writeText(f.description.map(d=>d?.trim()).join(" ").replace(/\n/g, " "));
         writer.writeNewLine();
 
         // params
@@ -93,7 +101,7 @@ class MarkdownWriter {
     public writeText(s: string, indent: number = 0) {
         // split into lines, trim each, then re-join with a space
         // then re-break into lines that are no more than columns wide
-        const lines = s.split("\n").map(l=>l.trim()).join(" ").split("\n");
+        const lines = s.split("\n").map(l=>l?.trim()).join(" ").split("\n");
         const colLimit = this.columns - indent * 4;
         const indentStr = " ".repeat(indent * 4);
         lines.forEach(l => {
@@ -101,7 +109,7 @@ class MarkdownWriter {
                 const idx = l.lastIndexOf(" ", colLimit);
                 this.write(indentStr + l.substring(0, idx));                
                 this.writeNewLine();
-                l = l.substring(idx).trim();
+                l = l.substring(idx)?.trim();
             }
             this.write(indentStr + l);
             this.writeNewLine();

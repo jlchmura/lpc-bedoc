@@ -10,15 +10,17 @@
   },
   "exports": {
     ".": "./dist/index.js"
-  },   
+  },
   "bedoc": {
     "printer": "./dist/index.js",
-    "parser": "./dist/index.js"    
+    "parser": "./dist/index.js",
+    "input": ["../lpc-test2/**/*.c"],
+    "output": "docs"    
   },
   "author": "jlchmura",
   "license": "MIT",
   "dependencies": {
-    "@gesslar/bedoc": "^1.6.0",
+    "@gesslar/bedoc": "^1.7.0",
     "@lpc-lang/core": "^1.1.2-5.2"
   },
   "devDependencies": {
