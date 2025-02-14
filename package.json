@@ -2,12 +2,16 @@
   "name": "@lpc-lang/bedoc",
   "version": "1.0.0",
   "description": "BeDoc parser for LPC",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jlchmura/lpc-bedoc"
+  },  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b && node ./build.js",
     "start": "npm run build && npx bedoc -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
   },
+  "main": "./dist/index.js",
   "exports": {
     ".": "./dist/index.js"
   },
