@@ -88,9 +88,9 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                     switch (tag.kind) {                        
                         case lpc.SyntaxKind.JSDocParameterTag:
                             const p = tag as lpc.JSDocParameterTag;
-                            const pName = p.name.getText(sourceFile);
+                            const pName = p.name.getText(sourceFile);                            
                             const parsedParam: Param = {
-                                type: p.typeExpression?.getText(sourceFile) || "",
+                                type: p.typeExpression?.type?.getText(sourceFile) || "",
                                 name: pName,
                                 content: typeof p.comment === "string" ? [p.comment] : []
                             };
@@ -105,7 +105,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                         case lpc.SyntaxKind.JSDocReturnTag:
                             const r = tag as lpc.JSDocReturnTag;
                             tags["return"] = {
-                                type: r.typeExpression?.getText(sourceFile) || "",
+                                type: r.typeExpression?.type?.getText(sourceFile) || "",
                                 content: [r.comment as string]
                             };
                             break;            
