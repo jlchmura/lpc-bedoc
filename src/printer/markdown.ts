@@ -29,7 +29,9 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
     writer.writeListItems(toc);
     writer.writeNewLine();
 
-    functions.forEach(f => {
+    functions.forEach((f,fIdx) => {
+        (fIdx > 0) && writer.writeHorizontalRule();        
+
         writer.writeHeader(2, f.signature.name);        
 
         // signature
@@ -48,18 +50,32 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
 
         // params
         if (f.param?.length) {
-            writer.writeHeader(3, "Parameters");
-            writer.writeTableHeader(["Type", "Name", "Description"]);
-
+            writer.writeHeader(4, "Parameters");
+                
+            const hasDefaults = f.param.some(p => p.default);            
+            const headerParts = ["Type", "Name", "Description"];            
+            hasDefaults && headerParts.splice(2, 0, "Default");
+            
+            writer.writeTableHeader(headerParts);
+            
             f.param.forEach(p => {
-                writer.writeTableRow([`\`${p.type}\``, p.name, stripNewLines(p.content.join(" "))]);
+                // format param name
+                const nameParts = [];                
+                nameParts.push(p.name);                
+                p.optional && nameParts.push("_(optional)_");                
+                
+                const paramParts = [`\`${p.type}\``, nameParts.join(" "), stripNewLines(p.content.join(" "))];
+                // if there is a default, insert it as the 3rd column                
+                hasDefaults && paramParts.splice(2, 0, p.default);                
+
+                writer.writeTableRow(paramParts);
             });
             writer.writeNewLine();
         }
 
         // returns
         if (f.return) {
-            writer.writeHeader(3, "Returns");
+            writer.writeHeader(4, "Returns");
             if (f.return.type) {
                 writer.writeCode(f.return.type);
                 writer.write(" - ");
@@ -67,9 +83,7 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
             
             writer.writeText(stripNewLines(f.return.content.join(" ")));
             writer.writeNewLine();
-        }
-
-        writer.writeHorizontalRule();
+        }        
     });
 
     return {

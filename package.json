@@ -1,14 +1,15 @@
 {
   "name": "@lpc-lang/bedoc",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "BeDoc parser for LPC",
   "repository": {
     "type": "git",
     "url": "https://github.com/jlchmura/lpc-bedoc"
-  },  
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b && node ./build.js",
+    "prepack": "npm run build",
     "start": "npm run build && npx bedoc -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
   },
   "main": "./dist/index.js",
@@ -16,17 +17,21 @@
     ".": "./dist/index.js"
   },
   "bedoc": {
-    "modules": ["./dist/index.js"],
+    "modules": [
+      "./dist/index.js"
+    ],
     "printer": "./dist/index.js",
     "parser": "./dist/index.js",
-    "input": ["../lpc-test2/**/*.c"],
-    "output": "docs"   
+    "input": [
+      "../lpc-test2/**/*.c"
+    ],
+    "output": "docs"
   },
   "author": "jlchmura",
   "license": "MIT",
   "dependencies": {
-    "@gesslar/bedoc": "^1.7.0",
-    "@lpc-lang/core": "^1.1.2-5.2"
+    "@gesslar/bedoc": "^1.9.0",
+    "@lpc-lang/core": "../lpc-language-server/lib"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",

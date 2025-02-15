@@ -16,6 +16,8 @@ export interface TypedNode extends Node {
 
 export interface Param extends TypedNode {    
     name: string,    
+    optional: boolean,
+    default: string
 }
 
 export interface FunctionResult {

@@ -92,7 +92,9 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                             const parsedParam: Param = {
                                 type: p.typeExpression?.type?.getText(sourceFile) || "",
                                 name: pName,
-                                content: typeof p.comment === "string" ? [p.comment] : []
+                                content: typeof p.comment === "string" ? [p.comment] : [],
+                                optional: p.isBracketed,
+                                default: p.defaultExpression?.getText(sourceFile) || ""
                             };
 
                             if (!parsedParam.type) {
@@ -125,9 +127,20 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                 params.set(pName, {
                     type: p.type?.getText(sourceFile) || "",
                     name: pName,
-                    content: []
+                    content: [],
+                    optional: false,
+                    default: p.initializer?.getText(sourceFile) || ""
                 });
-            }
+            } else {
+                // fill in some extras from signature
+                const param = params.get(pName)!;
+                if (!param.type.length) {
+                    param.type = p.type?.getText(sourceFile) || "";                    
+                }
+                if (!param.default.length) {
+                    param.default = p.initializer?.getText(sourceFile) || "";
+                }                     
+            }            
         });
 
         tags.param = Array.from(params.values());

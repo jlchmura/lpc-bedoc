@@ -26,6 +26,10 @@ provides:
                 dataType: string
               name:
                 dataType: string
+              optional: 
+                dataType: boolean
+              default:
+                dataType: string
               content:
                 dataType: string[]
           return:
@@ -58,8 +62,12 @@ accepts:
                 dataType: string
               name:
                 dataType: string
+              optional: 
+                dataType: boolean
+              default:
+                dataType: string
               content:
-                dataType: string[]
+                dataType: string[]              
           return:
             dataType: object
             contains:
