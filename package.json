@@ -1,6 +1,6 @@
 {
   "name": "@lpc-lang/bedoc",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "BeDoc parser for LPC",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b && node ./build.js",
     "prepack": "npm run build",
-    "start": "npm run build && npx bedoc -f markdown -i \"../lpc-test2/**/*.c\" -o docs"
+    "start": "npm run build && npx bedoc"
   },
   "main": "./dist/index.js",
   "exports": {

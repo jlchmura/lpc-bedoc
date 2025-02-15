@@ -1,6 +1,8 @@
 import { ActionDefinition } from "@gesslar/bedoc/dist/types/core/ActionManager";
 import { FunctionResult } from "../types";
 
+const FENCED_LANG = "c";
+
 export const action: ActionDefinition = {
     meta: {
         action: "print",
@@ -41,7 +43,7 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
             f.signature.type,                      
             `${f.signature.name}(${f.signature.parameters?.join(", ")})`,            
         ];
-        writer.writeGuardedCode(signatureParts.filter(p=>!!p).join(" "), "lpc");
+        writer.writeFencedCode(signatureParts.filter(p=>!!p).join(" "), FENCED_LANG);
         writer.writeNewLine();
 
         // description
@@ -83,7 +85,22 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
             
             writer.writeText(stripNewLines(f.return.content.join(" ")));
             writer.writeNewLine();
-        }        
+        }      
+        
+        if (f.tags?.length) {
+            f.tags.forEach(tag => {
+                // capitalize first letter
+                writer.writeHeader(4, tag.name.charAt(0).toUpperCase() + tag.name.slice(1));
+
+                if (tag.name==="example") {
+                    writer.writeFencedCode(tag.content.join(" "), FENCED_LANG);
+                } else {
+                    writer.writeText(stripNewLines(tag.content.join(" ")));
+                }
+
+                writer.writeNewLine();
+            });
+        }
     });
 
     return {
@@ -150,7 +167,7 @@ class MarkdownWriter {
         this.write(`\`${s}\``);
     }
 
-    public writeGuardedCode(s: string, lang?: string) {
+    public writeFencedCode(s: string, lang?: string) {
         this.write("```" + (lang || "") + "\n" + s + "\n```\n");        
     }
 

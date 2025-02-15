@@ -111,6 +111,16 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                                 content: [r.comment as string]
                             };
                             break;            
+                        default:
+                            const tagName = tag.tagName.getText(sourceFile);
+                            if (!tags.tags) {
+                                tags.tags = [];
+                            }
+                            tags.tags.push({
+                                name: tagName,
+                                content: [tag.comment as string]
+                            });
+                            break;
                     }
                 });
             }            

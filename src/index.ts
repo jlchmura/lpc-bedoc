@@ -39,8 +39,13 @@ provides:
                 dataType: string
               content:
                 dataType: string[]
-          example:
-            dataType: string[]
+          tags:
+            dataType: object[]
+            contains:
+              name:
+                dataType: string
+              content:
+                dataType: string[]
 `;
 const contractPrinter = `
 ---
@@ -75,8 +80,13 @@ accepts:
                 dataType: string
               content:
                 dataType: string[]
-          example:
-            dataType: string[]
+          tags:
+            dataType: object[]
+            contains:
+              name:
+                dataType: string
+              content:
+                dataType: string[]
 `;
 
 export const contracts = [contractParser, contractPrinter];

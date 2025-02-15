@@ -14,6 +14,10 @@ export interface TypedNode extends Node {
     type: string,
 }
 
+export interface NamedNode extends Node {
+    name: string;
+}
+
 export interface Param extends TypedNode {    
     name: string,    
     optional: boolean,
@@ -26,4 +30,5 @@ export interface FunctionResult {
     signature: Signature;
     param: Param[];
     return: TypedNode;
+    tags?: NamedNode[];
 }
