@@ -17,7 +17,9 @@
     ".": "./dist/index.js"
   },
   "bedoc": {
-    
+    "modules": [
+      "./dist/index.js"
+    ],
     "printer": "./dist/index.js",
     "parser": "./dist/index.js",
     "input": [
