@@ -92,7 +92,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                             const parsedParam: Param = {
                                 type: p.typeExpression?.type?.getText(sourceFile) || "",
                                 name: pName,
-                                content: typeof p.comment === "string" ? [p.comment] : [],
+                                content: typeof p.comment === "string" ? [trimDashFromComment(p.comment)] : [],
                                 optional: p.isBracketed,
                                 default: p.defaultExpression?.getText(sourceFile) || ""
                             };
@@ -108,7 +108,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
                             const r = tag as lpc.JSDocReturnTag;
                             tags["return"] = {
                                 type: r.typeExpression?.type?.getText(sourceFile) || "",
-                                content: [r.comment as string]
+                                content: [trimDashFromComment(r.comment as string)]
                             };
                             break;            
                         default:
@@ -126,8 +126,7 @@ async function runLpcParser(params: { file: any; moduleContent: string }): Promi
             }            
         });
 
-        // markdown printer can't hundle undefined return, so fill it in if there isn't one
-        tags.return = tags["return"] || { type: "", content: [] };
+        tags.return = tags["return"] || { type: f.type?.getText(sourceFile) || "", content: [] };
 
         // fill in any missing parameters using the params from
         // the function signature
@@ -174,4 +173,16 @@ function isAccessModifier(modifier: lpc.Modifier) {
     }
 
     return false;
+}
+
+function trimCharFromStart(str: string, char: string) {
+    let i = 0;
+    while (str[i] === char) {
+        i++;
+    }
+    return str.slice(i);
+}
+
+function trimDashFromComment(comment: string) {
+    return trimCharFromStart(comment.trim(),"-").trim();
 }

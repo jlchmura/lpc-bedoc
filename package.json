@@ -1,6 +1,6 @@
 {
   "name": "@lpc-lang/bedoc",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "BeDoc parser for LPC",
   "repository": {
     "type": "git",
@@ -17,9 +17,7 @@
     ".": "./dist/index.js"
   },
   "bedoc": {
-    "modules": [
-      "./dist/index.js"
-    ],
+    
     "printer": "./dist/index.js",
     "parser": "./dist/index.js",
     "input": [

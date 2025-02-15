@@ -12,6 +12,11 @@ export const action: ActionDefinition = {
     run: run as any
 }
 
+/**
+ * Markdown bedoc printer
+ * @param params printer params
+ * @returns bedoc printer result
+ */
 async function run(params: { file: any, moduleContent: FunctionResult[] }): Promise<any> {
     const fileName = params.file.module;
     const writer = new MarkdownWriter("\n", 80);
@@ -76,19 +81,24 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
         }
 
         // returns
-        if (f.return) {
+        if (f.return && (f.return.content?.length || f.return.type)) {                       
             writer.writeHeader(4, "Returns");
-            if (f.return.type) {
+            if (f.return.type?.length) {
                 writer.writeCode(f.return.type);
-                writer.write(" - ");
             }
-            
-            writer.writeText(stripNewLines(f.return.content.join(" ")));
+            if (f.return.content?.length) {
+                if (f.return.type?.length) writer.write(" - ");
+                writer.writeText(stripNewLines(f.return.content.join(" ")));                
+            }
+           
+            writer.writeNewLine();
             writer.writeNewLine();
         }      
         
         if (f.tags?.length) {
             f.tags.forEach(tag => {
+                if (!tag.content?.length) return;
+
                 // capitalize first letter
                 writer.writeHeader(4, tag.name.charAt(0).toUpperCase() + tag.name.slice(1));
 
@@ -111,7 +121,9 @@ async function run(params: { file: any, moduleContent: FunctionResult[] }): Prom
     }
 }
 
-
+/**
+ * A very basic markdown writer
+ */
 class MarkdownWriter {
     private output: string;
 
@@ -119,6 +131,10 @@ class MarkdownWriter {
         this.output = "";
     }
 
+    /**
+     * Get the markdown text that has been written
+     * @returns Markdown text
+     */
     public getText() {
         return this.output;
     }
