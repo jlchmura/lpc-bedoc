@@ -30,7 +30,7 @@
   "author": "jlchmura",
   "license": "MIT",
   "dependencies": {
-    "@gesslar/bedoc": "^1.9.0",
+    "@gesslar/bedoc": "^1.10.0",
     "@lpc-lang/core": "^1.1.26"
   },
   "devDependencies": {
