@@ -3,90 +3,125 @@ import * as markdown from "./printer/markdown";
 
 export const actions = [
     lpc.action,
-    markdown.action,    
+    markdown.action,
 ]
 
 const contractParser = `
----
 provides:
-  root:
-    dataType: object
-    contains:
-      functions:
-        dataType: object[]
-        contains:
+  type: object
+  properties:
+    functions:
+      type: array
+      items:
+        type: object
+        properties:
           name:
-            dataType: string
+            type: string
           description:
-            dataType: string[]
+            type: array
+            items:
+              type: string
           param:
-            dataType: object[]
-            contains:
-              type:
-                dataType: string
-              name:
-                dataType: string
-              optional: 
-                dataType: boolean
-              default:
-                dataType: string
-              content:
-                dataType: string[]
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                name:
+                  type: string
+                optional:
+                  type: boolean
+                default:
+                  type: string
+                content:
+                  type: array
+                  items:
+                    type: string
           return:
-            dataType: object
-            contains:
+            type: object
+            properties:
               type:
-                dataType: string
+                type: string
               content:
-                dataType: string[]
+                type: array
+                items:
+                  type: string
           tags:
-            dataType: object[]
-            contains:
-              name:
-                dataType: string
-              content:
-                dataType: string[]
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                content:
+                  type: array
+                  items:
+                    type: string
 `;
 const contractPrinter = `
----
 accepts:
-  root:
-    dataType: object
-    contains:
-      functions:
-        dataType: object[]
-        contains:
+  type: object
+  required:
+    - functions
+  properties:
+    functions:
+      type: array
+      items:
+        type: object
+        required:
+          - name
+        properties:
           name:
-            dataType: string
+            type: string
           description:
-            dataType: string[]
+            type: array
+            items:
+              type: string
           param:
-            dataType: object[]
-            contains:
-              type:
-                dataType: string
-              name:
-                dataType: string
-              optional: 
-                dataType: boolean
-              default:
-                dataType: string
-              content:
-                dataType: string[]              
+            type: array
+            items:
+              type: object
+              required:
+                - name
+                - type
+              properties:
+                type:
+                  type: string
+                name:
+                  type: string
+                optional:
+                  type: boolean
+                default:
+                  type: string
+                content:
+                  type: array
+                  items:
+                    type: string
           return:
-            dataType: object
-            contains:
+            type: object
+            required:
+              - type
+            properties:
               type:
-                dataType: string
+                type: string
               content:
-                dataType: string[]
+                type: array
+                items:
+                  type: string
           tags:
-            dataType: object[]
-            contains:
-              name:
-                dataType: string
-              content:
-                dataType: string[]
+            type: array
+            items:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                content:
+                  type: array
+                  items:
+                    type: string
 `;
 
 export const contracts = [contractParser, contractPrinter];
