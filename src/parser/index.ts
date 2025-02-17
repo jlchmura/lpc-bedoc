@@ -19,6 +19,7 @@ interface ErrorResult {
 
 type Result = SuccessResult | ErrorResult;
 
+export const contract = `ref://./lpc.parser.contract.yaml`;
 
 export const action: ActionDefinition = {
     meta: {
@@ -186,3 +187,4 @@ function trimCharFromStart(str: string, char: string) {
 function trimDashFromComment(comment: string) {
     return trimCharFromStart(comment.trim(),"-").trim();
 }
+

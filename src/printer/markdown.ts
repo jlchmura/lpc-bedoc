@@ -12,6 +12,8 @@ export const action: ActionDefinition = {
     run: run as any
 }
 
+export const contract = 'ref://./markdown.printer.contract.yaml';
+
 /**
  * Markdown bedoc printer
  * @param params printer params

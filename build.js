@@ -1,4 +1,5 @@
 const esbuild = require("esbuild");
+const copy = require('esbuild-plugin-copy');
 
 // ACTION
 esbuild.build({
@@ -13,5 +14,15 @@ esbuild.build({
     mainFields: ['module','main'], 
     logLevel: 'warning',
     treeShaking: true,
-    minify: false
+    minify: false,    
+    plugins: [
+        copy.copy({
+          resolveFrom: 'cwd',
+          assets: { from: ['./src/parser/*.yaml'], to: ['./dist/'] },          
+        }),
+        copy.copy({
+            resolveFrom: 'cwd',
+            assets: { from: ['./src/printer/*.yaml'], to: ['./dist/'] },
+          }),        
+      ],
 })
